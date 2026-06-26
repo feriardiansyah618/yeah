@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTA Vibes - Grand Street Life</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           1. RESET & BASE STYLES
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Menghilangkan kursor asli bawaan Windows/HP */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            color: #fff;
+            background-color: #000;
+        }
+
+        /* ==========================================================================
+           2. ADVANCED EFFECTS (CRT SCANLINES & CUSTOM CURSOR)
+           ========================================================================== */
+        /* Efek garis-garis monitor TV tabung/CCTV */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        /* Titik tengah kursor */
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff9500;
+            position: fixed;
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Lingkaran luar kursor yang mengekor */
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 149, 0, 0.5);
+            position: fixed;
+            border-radius: 50%;
+            z-index: 9998;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* ==========================================================================
+           3. LAYOUT & HERO SECTION
+           ========================================================================== */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=2000') center/cover;
+            transition: background-position 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(0, 0, 0, .9) 10%, rgba(0, 0, 0, .2) 100%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8%;
+            perspective: 1000px; /* Memberikan efek ruang 3D */
+        }
+
+        .content {
+            max-width: 600px;
+        }
+
+        /* ==========================================================================
+           4. GLITCH TEXT EFFECT (JUDUL GAME)
+           ========================================================================== */
+        .game-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 9rem;
+            line-height: 0.9;
+            letter-spacing: 5px;
+            position: relative;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 149, 0, 0.5);
+        }
+
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent;
+        }
+
+        .glitch::before {
+            left: 3px;
+            text-shadow: -2px 0 #ff00c1;
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -3px;
+            text-shadow: -2px 0 #00fff9;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); }
+            20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); }
+            60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); }
+            100% { clip-path: inset(30% 0 20% 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(15% 0 65% 0); }
+            20% { clip-path: inset(5% 0 85% 0); }
+            40% { clip-path: inset(75% 0 15% 0); }
+            60% { clip-path: inset(25% 0 55% 0); }
+            80% { clip-path: inset(85% 0 5% 0); }
+            100% { clip-path: inset(45% 0 35% 0); }
+        }
+
+        .desc {
+            margin: 30px 0;
+            max-width: 500px;
+            color: #ddd;
+            line-height: 1.8;
+        }
+
+        /* Tombol Start Game Utama */
+        .play-btn {
+            display: inline-block;
+            padding: 18px 50px;
+            background: #ff9500;
+            color: #111;
+            text-decoration: none;
+            border-radius: 5px; /* Kotak tegas ala UI Game */
+            font-weight: 800;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 149, 0, 0.4);
+        }
+
+        .play-btn:hover {
+            background: #fff;
+            color: #ff9500;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+            transform: scale(1.05) skewX(-5deg);
+        }
+
+        /* ==========================================================================
+           5. 3D MENU BOX INTERACTIVE
+           ========================================================================== */
+        .menu-box {
+            width: 320px;
+            backdrop-filter: blur(15px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        .menu-title {
+            font-family: 'Bebas Neue';
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            letter-spacing: 3px;
+            color: #ff9500;
+        }
+
+        .menu-box ul { list-style: none; }
+        .menu-box ul li { margin-bottom: 12px; }
+
+        .menu-box ul li a {
+            display: block;
+            text-decoration: none;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-box ul li a:hover {
+            background: rgba(255, 149, 0, 0.2);
+            border-left: 3px solid #ff9500;
+            transform: translateX(15px);
+            letter-spacing: 1px;
+        }
+
+        .status {
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #8aff8a;
+            font-family: monospace;
+            text-shadow: 0 0 8px #8aff8a;
+        }
+
+        /* ==========================================================================
+           6. FOOTER & RESPONSIVE
+           ========================================================================== */
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 8%;
+            z-index: 2;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 25px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            color: #ff9500;
+        }
+
+        @media(max-width: 900px) {
+            * { cursor: auto; } /* Kembalikan kursor asli di HP/Tablet */
+            .cursor-dot, .cursor-outline, .scanlines { display: none; }
+            body { overflow: auto; }
+            .hero { height: auto; min-height: 100vh; }
+            .container { flex-direction: column; justify-content: center; text-align: center; padding: 50px 25px; }
+            .game-title { font-size: 5rem; }
+            .menu-box { width: 100%; max-width: 400px; margin-top: 50px; }
+            .footer { position: relative; left: 0; bottom: 0; text-align: center; margin: 40px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <section class="hero">
+        <div class="overlay"></div>
+        
+        <div class="container">
+            <div class="content">
+                <h1 class="game-title glitch" data-text="GRAND STREET LIFE">
+                    GRAND<br>STREET<br>LIFE
+                </h1>
+                <p class="desc">
+                    Masuki dunia tanpa batas. Jelajahi kota, bangun reputasi,
+                    dan ciptakan kisahmu sendiri dalam pengalaman yang penuh aksi.
+                </p>
+                
+                <a href="#" class="play-btn">START GAME</a>
+            </div>
+
+            <div class="menu-box">
+                <h2 class="menu-title">MAIN MENU</h2>
+                <ul>
+                    <li><a href="#" class="menu-item">▶ NEW GAME</a></li>
+                    <li><a href="#" class="menu-item">▶ CONTINUE</a></li>
+                    <li><a href="#" class="menu-item">▶ MULTIPLAYER</a></li>
+                    <li><a href="#" class="menu-item">▶ SETTINGS</a></li>
+                    <li><a href="#" class="menu-item">▶ GALLERY</a></li>
+                    <li><a href="#" class="menu-item">▶ EXIT</a></li>
+                </ul>
+                <div class="status">● ONLINE</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="#">Instagram</a>
+            <a href="#">Discord</a>
+            <a href="#">YouTube</a>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- ANIMASI CUSTOM CURSOR (Mengekor Halus) ---
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            let mouseX = 0, mouseY = 0;
+            let outlineX = 0, outlineY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                // Dot langsung menempel kursor
+                cursorDot.style.left = `${mouseX}px`;
+                cursorDot.style.top = `${mouseY}px`;
+            });
+
+            function animateCursor() {
+                let distX = mouseX - outlineX;
+                let distY = mouseY - outlineY;
+                
+                outlineX += distX * 0.15; // Angka delay kejar-kejaran kursor (0.15)
+                outlineY += distY * 0.15;
+                
+                cursorOutline.style.left = `${outlineX}px`;
+                cursorOutline.style.top = `${outlineY}px`;
+                
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // Membesarkan kursor saat menyorot link/tombol
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    cursorOutline.style.width = '60px';
+                    cursorOutline.style.height = '60px';
+                    cursorOutline.style.backgroundColor = 'rgba(255, 149, 0, 0.1)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    cursorOutline.style.width = '40px';
+                    cursorOutline.style.height = '40px';
+                    cursorOutline.style.backgroundColor = 'transparent';
+                });
+            });
+
+            // --- INTERAKSI 3D TILT EFFECT PADA MENU BOX ---
+            const menuBox = document.querySelector('.menu-box');
+            
+            document.addEventListener('mousemove', (e) => {
+                let xAxis = (window.innerWidth / 2 - e.pageX) / 35; // Sensitivitas kemiringan X
+                let yAxis = (window.innerHeight / 2 - e.pageY) / 35; // Sensitivitas kemiringan Y
+                
+                menuBox.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+
+            // Reset posisi kotak menu ke semula jika mouse keluar layar
+            document.addEventListener('mouseleave', () => {
+                menuBox.style.transform = `rotateY(0deg) rotateX(0deg)`;
+                menuBox.style.transition = `transform 0.5s ease`;
+            });
+            
+            document.addEventListener('mouseenter', () => {
+                menuBox.style.transition = `none`;
+            });
+
+            // --- BACKGROUND MOUSE PARALLAX ---
+            const heroSection = document.querySelector('.hero');
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 15;
+                const y = (e.clientY / window.innerHeight - 0.5) * 15;
+                heroSection.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+            });
+
+            // --- LIVE LOG SERVER STATUS ---
+            const statusText = document.querySelector('.status');
+            setInterval(() => {
+                statusText.innerHTML = Math.random() > 0.4 ? '● KONEKSI AMAN' : '● MENYINKRONKAN...';
+                statusText.style.color = Math.random() > 0.4 ? '#8aff8a' : '#ff9500';
+            }, 3000);
+
+            // --- LOGIKA POP-UP PENGAMAN REFRESH ---
+            // Catatan: Jika kamu sudah mengganti '#' dengan link AdsBlueMedia asli, 
+            // hapus baris e.preventDefault() dan kode alert di bawah agar link-nya berfungsi mengarah ke locker!
+            const menuItems = document.querySelectorAll('.menu-item, .play-btn');
+            menuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if(item.getAttribute('href') === '#') {
+                        e.preventDefault();
+                        alert(`[SYSTEM] Modul menu ini belum dipasang link AdsBlueMedia!`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
